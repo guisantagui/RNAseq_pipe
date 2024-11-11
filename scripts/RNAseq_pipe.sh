@@ -9,7 +9,7 @@ strand="reverse"
 
 # Directory stuff
 ####################################################################################################
-cd ../..
+cd ..
 source rnaseq_preproc/bin/activate
 
 data_dir="data/"
@@ -45,6 +45,18 @@ mkdir -p $counts_ercc_dir
 ####################################################################################################
 # Pipeline                                                                                         #
 ####################################################################################################
+
+# Download FASTQs
+####################################################################################################
+cd $data_dir
+
+while read -r accession; do
+  echo "Downloading accession: $accession"
+  prefetch $accession
+  fasterq-dump $accession | gzip
+done < accessions.txt
+
+cd ..
 
 # Preprocessing
 ####################################################################################################
@@ -135,14 +147,14 @@ done < "${data_dir}accessions.txt"
 
 
 # Obtain counts from the reference alignments and parse them in a CSV matrix
-Rscript scripts/preprocessing/get_counts.R $align_ref_dir \
+Rscript scripts/get_counts.R $align_ref_dir \
         --annotFile "${ref_dir}GCF_000001405.26_GRCh38_genomic.gtf" \
         --att "gene_name" \
         --strand $strand \
         --outDir $counts_ref_dir 
 
 # Obtain counts from the ERCC alignments and parse them in a CSV matrix
-Rscript scripts/preprocessing/get_counts.R $align_ercc_dir \
+Rscript scripts/get_counts.R $align_ercc_dir \
         --annotFile "${ercc_dir}ERCC92.gtf" \
         --att "gene_id" \
         --strand $strand \
@@ -162,13 +174,13 @@ multiqc $(find $qc_postrim -type f -name "*.zip" -and -name "*_val_*") \
 DE_dir="results/DE/"
 mkdir -p $DE_dir
 
-Rscript scripts/DE/DE.R --gene_counts "${counts_ref_dir}counts.csv" \
+Rscript scripts/DE.R --gene_counts "${counts_ref_dir}counts.csv" \
         --ercc_counts "${counts_ercc_dir}counts.csv" \
         --sample_info "${data_dir}sample_info.csv" \
         --useERCCs \
         --outDir "${DE_dir}w_ercc/"
 
-Rscript scripts/DE/DE.R --gene_counts "${counts_ref_dir}counts.csv" \
+Rscript scripts/DE.R --gene_counts "${counts_ref_dir}counts.csv" \
         --ercc_counts "${counts_ercc_dir}counts.csv" \
         --sample_info "${data_dir}sample_info.csv" \
         --outDir "${DE_dir}wo_ercc/"
@@ -178,11 +190,11 @@ Rscript scripts/DE/DE.R --gene_counts "${counts_ref_dir}counts.csv" \
 enrich_dir="results/enrichment/"
 mkdir -p $enrich_dir
 
-Rscript scripts/enrichment/enrichment.R "${DE_dir}w_ercc/DESeqRes_LFCShrunk.csv" \
+Rscript scripts/enrichment.R "${DE_dir}w_ercc/DESeqRes_LFCShrunk.csv" \
         --alpha 0.05 \
         --outDir "${enrich_dir}w_ercc/"
 
-Rscript scripts/enrichment/enrichment.R "${DE_dir}wo_ercc/DESeqRes_LFCShrunk.csv" \
+Rscript scripts/enrichment.R "${DE_dir}wo_ercc/DESeqRes_LFCShrunk.csv" \
         --alpha 0.05 \
         --outDir "${enrich_dir}wo_ercc/"
 
