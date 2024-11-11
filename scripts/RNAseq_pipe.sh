@@ -46,6 +46,18 @@ mkdir -p $counts_ercc_dir
 # Pipeline                                                                                         #
 ####################################################################################################
 
+# Download references
+####################################################################################################
+
+cd $ref_dir
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.fna.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.gff.gz
+
+gzip GCF_000001405.26_GRCh38_genomic.fna.gz
+gzip GCF_000001405.26_GRCh38_genomic.gff.gz
+
+cd ../..
+
 # Download FASTQs
 ####################################################################################################
 cd $data_dir
