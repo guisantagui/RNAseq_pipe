@@ -155,6 +155,16 @@ ggsave(sprintf("%sora_CC_dtplt.pdf", outDir), height = 4,
 ggsave(sprintf("%sora_MF_dtplt.pdf", outDir), height = 4,
        width = 7, plot = ora_MF_dtplt)
 
+print(sprintf("%s biological processes are significantly enriched (alpha <= %s).",
+              sum(ora_BP@result$p.adjust <= alph),
+              alph))
+print(sprintf("%s cellular components are significantly enriched (alpha <= %s).",
+              sum(ora_CC@result$p.adjust <= alph),
+              alph))
+print(sprintf("%s molecular functions are significantly enriched (alpha <= %s).",
+              sum(ora_MF@result$p.adjust <= alph),
+              alph))
+
 write.csv(ora_BP@result, file = sprintf("%sora_BP.csv", outDir))
 write.csv(ora_CC@result, file = sprintf("%sora_CC.csv", outDir))
 write.csv(ora_MF@result, file = sprintf("%sora_MF.csv", outDir))

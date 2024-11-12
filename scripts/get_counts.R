@@ -87,5 +87,8 @@ for(d in list.dirs(alignDir, recursive = F)){
 countsMat <- do.call(cbind, lapply(cntsLst, function(x) x$counts))
 colnames(countsMat) <- names(cntsLst)
 
+print(sprintf("The obtained counts matrix has %s features.",
+              as.character(nrow(countsMat))))
+
 write.csv(countsMat, file = sprintf("%scounts.csv", outDir))
 print(sprintf("counts.csv saved at %s.", outDir))

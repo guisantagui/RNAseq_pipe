@@ -29,6 +29,8 @@ counts_dir="${results_dir}counts/"
 counts_ref_dir="${counts_dir}ref/"
 counts_ercc_dir="${counts_dir}ercc/"
 
+mkdir -p $ref_dir
+mkdir -p $ercc_dir
 mkdir -p $results
 mkdir -p $qc_pretrim
 mkdir -p $qc_postrim
@@ -55,7 +57,12 @@ wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_G
 
 gzip GCF_000001405.26_GRCh38_genomic.fna.gz
 gzip GCF_000001405.26_GRCh38_genomic.gff.gz
+cd ../..
 
+cd $ercc_dir
+wget https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
+
+unzip ERCC92.zip
 cd ../..
 
 # Download FASTQs

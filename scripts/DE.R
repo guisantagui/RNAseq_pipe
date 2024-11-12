@@ -208,6 +208,9 @@ getVolcPlot <- function(fitObjct, alpha = 0.05,
         
         volcPlotDF$sign <- factor(volcPlotDF$sign)
         volcPlotDF$labs <- volcPlotDF$sign == "significant"
+        print(sprintf("There are %s significant genes with significance level of %s.",
+                      sum(volcPlotDF$labs),
+                      alpha))
         if(!is.null(labsThrshld)){
                 volcPlotDF$labs <- volcPlotDF$labs & ((volcPlotDF$log2FC <= -labsThrshld[1] | volcPlotDF$log2FC >= labsThrshld[1]) | volcPlotDF$adj.pVal_minLog10 >= labsThrshld[2])
         }
@@ -290,6 +293,10 @@ samp_info <- read.csv(samp_info_file, row.names = 1)
 gene_counts <- gene_counts[rowSums(gene_counts) != 0, ]
 ercc_counts <- ercc_counts[rowSums(ercc_counts) != 0, ]
 
+print(sprintf("%s genomic features don't have zeros accross all the samples",
+              nrow(gene_counts)))
+print(sprintf("%s ERCC features don't have zeros accross all the samples",
+              nrow(ercc_counts)))
 
 #gene_counts <- gene_counts[, colnames(gene_counts) != "SRR5223570"]
 #ercc_counts <- ercc_counts[, colnames(ercc_counts) != "SRR5223570"]
@@ -348,7 +355,11 @@ DESeq2::plotMA(resLFC)
 dev.off()
 
 # Do PCA and plot it 
-pcaPlot <- plotPCACust(assay(rlog(dds)), scale = F, labs = T, biplot = T, topNFeats = 5)
+pcaPlot <- plotPCACust(assay(rlog(dds)),
+                       scale = F,
+                       labs = T,
+                       biplot = T,
+                       topNFeats = 5)
 
 ggsave(filename = sprintf("%spca_rlog.pdf", outDir),
        width = 5,
